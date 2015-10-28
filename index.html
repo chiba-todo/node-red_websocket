@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>WebSocket and Bootstrap Sample</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <a href="#"></a>
+        <div id="header" class="container">
+            <h1>WebSocket and Bootstrap</h1>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12" style="background:#ffffe5;">
+                    <form class="form-inline" style="margin: 15px;">
+                        <div class="form-group">
+                            <label class="sr-only control-label" for="msg">Message</label>
+                            <input id="msg-text" type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <input id="msg-submit" type="submit" value="submit" class="btn btn-primary">
+                        </div>
+                    </form>
+                    <div class="btn-group" style="margin: 15px;">
+                        <button id="on-btn" class="btn btn-success">ON</button>
+                        <button id="off-btn" class="btn btn-default">OFF</button>
+                    </div>
+                </div>
+            <!-- <div class="col-sm-6" style="background:#e5ffff;">bbb</div>
+                <div class="col-sm-3" style="background:#ffffe5;">ccc</div> -->
+            </div>
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+
+    		$(document).ready( function(){      // HTMLが準備できたら接続する
+    			connect();
+
+                $('#msg-submit').click(function() {
+                    var topic = 'Message';
+                    var msg = $('#msg-text').val();
+                    console.log(msg);
+                    var payload =  '{"' + topic + '": "' + msg + '"}';
+                    webSocket.send(payload);
+                });
+                $('#on-btn').click(function() {
+                    var topic = 'LED';
+                    var msg = "on";
+                    console.log(msg);
+                    var payload =  '{"' + topic + '": "' + msg + '"}';
+                    webSocket.send(payload);
+                });
+                $('#off-btn').click(function() {
+                    var topic = 'LED';
+                    var msg = "off";
+                    console.log(msg);
+                    var payload =  '{"' + topic + '": "' + msg + '"}';
+                    webSocket.send(payload);
+                });
+    		});
+
+            var wsUrl = 'ws://roadshow2015.mybluemix.net/ws/in';
+            var webSocket = null;
+
+          	function connect() {
+
+               	if (webSocket == null) {
+    				// WebSocket の初期化
+    				webSocket = new WebSocket(wsUrl);
+                    console.log('connect');
+                    console.log(webSocket);
+    				// イベントハンドラの設定
+    				//                webSocket.onopen = onOpen;
+                    webSocket.onopen = onOpen;
+                    webSocket.onmessage = onMessage;
+    			    webSocket.onerror = onError;
+    				webSocket.onclose = onClose;
+                }
+            }
+
+            function onOpen(event) {
+            	// console.log('onMessage' + event.data);
+
+            }
+
+            function onMessage(event) {
+            	console.log('onMessage' + event.data);
+            }
+
+            function onError(event) {
+            	console.log(event.data);
+            }
+
+            function onClose(event) {
+            	console.log(event.code);
+                webSocket = null;    // 勝手に接続が切れることがあるので、自動再接続する
+                connect();
+            }
+
+        </script>
+    </body>
+</html>
